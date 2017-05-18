@@ -1,0 +1,6 @@
+[package]
+name = "PO2"
+version = "0.1.0"
+authors = ["Danilo Weber Nunes <danilownunes@gmail.com>"]
+
+[dependencies]
