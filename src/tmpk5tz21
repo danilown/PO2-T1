@@ -1,0 +1,9 @@
+/*
+ * Recebe um n que eh o comprimento da sequincia de fibonacci
+ * Retorna um vetor contendo a sequencia de fibonacci com um determinado comprimento n 
+ */
+fn get_fibo_seq(){
+
+} 
+
+fn get_derivati
