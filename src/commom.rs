@@ -1,6 +1,7 @@
 /**
  * Recebe um n que eh o comprimento da sequincia de fibonacci
  * Retorna um vetor contendo a sequencia de fibonacci com um determinado comprimento n (não aceita valores menores que 1)
+ * NOTA: em sistemas 64 bits, n <= 93, valores maiores causam overflow.
  */
 fn get_fibo_seq(n: u64) -> Vec<u64> {
 	let mut fibo_seq :Vec<u64> = Vec::with_capacity(n as usize);
@@ -19,7 +20,7 @@ fn get_fibo_seq(n: u64) -> Vec<u64> {
 		return fibo_seq;
 	}
 
-	for i in 2..10 { 
+	for i in 2..(n as usize) { 
 		let ant = fibo_seq[i - 1];
 		let ant_ant = fibo_seq[i - 2];
 		fibo_seq.push(ant + ant_ant);
