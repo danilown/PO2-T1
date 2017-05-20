@@ -1,5 +1,3 @@
-
-/////////////////////////////////////// FIBONACCI ///////////////////////////////////////////////////////////
 /**
  * Recebe um n que eh o comprimento da sequincia de fibonacci
  * Retorna um vetor contendo a sequencia de fibonacci com um determinado comprimento n (não aceita valores menores que 1)
@@ -31,36 +29,30 @@ fn get_fibo_seq(n: u64) -> Vec<u64> {
 	fibo_seq
 } 
 
-/////////////////////////////////////// DERIVADAS PRIMEIRAS /////////////////////////////////////////////////
+/////////////////////////////////////// DERIVADAS PRIMEIRAS //////////////////////////////////////////////////
 /**
- * Recebe uma funcao de uma variavel, um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
+ * Recebe uma funcao, um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
  * avaliacao(nesta aplicacao ele sera fixo, mas por motivos de generalizacao, sera um parametro da funcao). A funcao sempre 
  * recebera da chamadora um h = 1000 * erro 
- * Retorna o valor da derivada primeira para um funcao de uma variavel
+ * Retorna o valor da derivada primeira para a primeira variavel da funcao dada no ponto
  */
-fn get_first_derivative1(func: &Fn(f64) -> f64, x: f64, h: f64, err: f64) -> f64 {
+fn get_first_derivative1(funcao: &srt, ponto: Vec<f64>, err: f64, h: f64) -> f64 {
 	let mut p: f64;
 	let mut q: f64;
-	let mut local_h = h;
+	let expr: meval::Expr = string.parse().unwrap();
+    let func = expr.bind("x").unwrap();
 
-	p = (func(x + local_h) - func(x - local_h)) / (2. * local_h);
     for i in 0..10 {
-    	q = p;
-    	local_h = local_h / 2.;
-		p = (func(x + local_h) - func(x - local_h )) / (2. * local_h);
-		let dif = p - q;
-		if dif.abs() < err {
-			break;
-		}
+    	p = func()
     }
-    p
 }
 
+
 /**
- * Recebe uma funcao de duas variaveis, um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
+ * Recebe uma funcao, um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
  * avaliacao(nesta aplicacao ele sera fixo, mas por motivos de generalizacao, sera um parametro da funcao). A funcao sempre 
  * recebera da chamadora um h = 1000 * erro 
- * Retorna o valor da derivada primeira para um funcao de duas variaveis
+ * Retorna o valor da derivada primeira para a segunda variavel da funcao dada no ponto
  */
 fn get_first_derivative2(funcao: &srt, ponto: Vec<f64>, err: f64, h: f64) -> f64 {
 	let mut p: f64;
@@ -75,10 +67,10 @@ fn get_first_derivative2(funcao: &srt, ponto: Vec<f64>, err: f64, h: f64) -> f64
 
 
 /**
- * Recebe uma funcao de 3 variaveis, um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
+ * Recebe uma funcao, um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
  * avaliacao(nesta aplicacao ele sera fixo, mas por motivos de generalizacao, sera um parametro da funcao). A funcao sempre 
  * recebera da chamadora um h = 1000 * erro 
- * Retorna o valor da derivada primeira para um funcao de tres variaveis
+ * Retorna o valor da derivada primeira para a terceira variavel da funcao dada no ponto
  */
 fn get_first_derivative3(funcao: &srt, ponto: Vec<f64>, err: f64, h: f64) -> f64 {
 	let mut p: f64;
@@ -92,7 +84,7 @@ fn get_first_derivative3(funcao: &srt, ponto: Vec<f64>, err: f64, h: f64) -> f64
 }
 
 
-/////////////////////////////////////// DERIVADAS SEGUNDAS //////////////////////////////////////////////////
+/////////////////////////////////////// D
 /**
  * Recebe uma string (funcao), um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
  * avaliacao(nesta aplicacao ele sera fixo, mas por motivos de generalizacao, sera um parametro da funcao). A funcao sempre 

@@ -38,22 +38,15 @@ fn get_fibo_seq(n: u64) -> Vec<u64> {
  * recebera da chamadora um h = 1000 * erro 
  * Retorna o valor da derivada primeira para um funcao de uma variavel
  */
-fn get_first_derivative1(func: &Fn(f64) -> f64, x: f64, h: f64, err: f64) -> f64 {
+fn get_first_derivative1(func: &Fn(f64) -> f64, x: f64, err: f64, h: f64) -> f64 {
 	let mut p: f64;
 	let mut q: f64;
-	let mut local_h = h;
 
-	p = (func(x + local_h) - func(x - local_h)) / (2. * local_h);
+	p = (func(x + h) - func(x - h)) / (2 * h);
     for i in 0..10 {
-    	q = p;
-    	local_h = local_h / 2.;
-		p = (func(x + local_h) - func(x - local_h )) / (2. * local_h);
-		let dif = p - q;
-		if dif.abs() < err {
-			break;
-		}
+    	q
+		p = (func(x + h) - func(x - h)) / (2 * h);
     }
-    p
 }
 
 /**
