@@ -1,32 +1,38 @@
 
 /////////////////////////////////////// FIBONACCI ///////////////////////////////////////////////////////////
 /**
- * Recebe um n que eh o comprimento da sequincia de fibonacci
+ * Recebe um n que eh o valor anterior ao mais alto da sequencia de fibonacci
+ * Ex.: se n = 90 , a sequencia tera tamanho 11 pois o elemento 11 da sequencia eh 144, que eh maior que 90 e o elemento 10 eh 89 que eh menor que 90
  * Retorna um vetor contendo a sequencia de fibonacci com um determinado comprimento n (não aceita valores menores que 1)
  * NOTA: em sistemas 64 bits, n <= 93, valores maiores causam overflow.
  */
+// Testes fibonacci
 fn get_fibo_seq(n: u64) -> Vec<u64> {
-    let mut fibo_seq :Vec<u64> = Vec::with_capacity(n as usize);
+    let mut fibo_seq: Vec<u64> = Vec::new();
+    let mut next_element: u64;
+    let mut i: u8 = 2; // a sequencia de fibonacci nao sera maior que 93 (overflow) e 93 cabe em 8 bits
 
     // colocando 1 em fibo_seq[0]
     fibo_seq.push(1);
-    // comprimento da sequencia eh 1
-    if n == 1{
+    // se n eh 0, o maior elemento da sequencia apos ele eh o 1
+    if n == 0{
+        // eliminando o espaco extra alocado e mantendo somente o necessario
+        fibo_seq.shrink_to_fit();
         return fibo_seq;
     }
-
+    
     // colocando 1 em fibo_seq[1]
-    fibo_seq.push(1);
-    // comprimento da sequencia eh 2
-    if n == 2{
-        return fibo_seq;
-    }
+    fibo_seq.push(1); 
 
-    for i in 2..(n as usize) { 
-        let next_element = fibo_seq[i - 1] + fibo_seq[i - 2];
+    next_element = fibo_seq[(i - 1) as usize] + fibo_seq[(i - 2) as usize];
+    while next_element <= n {
         fibo_seq.push(next_element);
+        i += 1;
+        next_element = fibo_seq[(i - 1) as usize] + fibo_seq[(i - 2) as usize];
     }
-
+    fibo_seq.push(next_element);
+    // eliminando o espaco extra alocado e mantendo somente o necessario
+    fibo_seq.shrink_to_fit();
     fibo_seq
 }
 
