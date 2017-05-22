@@ -5,3 +5,5 @@ authors = ["Danilo Weber Nunes <danilownunes@gmail.com>"]
 
 [dependencies]
 meval = "0.0.9"
+gtk = { git = "https://github.com/gtk-rs/gtk.git" , features = ["v3_16"] }
+gdk = { git = "https://github.com/gtk-rs/gdk.git"}
