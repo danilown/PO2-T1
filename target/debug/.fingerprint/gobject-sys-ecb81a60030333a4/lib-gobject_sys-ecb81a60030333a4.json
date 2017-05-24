@@ -1,0 +1,1 @@
+{"rustc":2692670034823971972,"features":"[]","target":12787705224928043599,"profile":14528549471338536373,"deps":[["bitflags v0.8.2",7157182118852453200],["glib-sys v0.3.4 (https://github.com/gtk-rs/sys#9556f8fe)",2353809678934440962],["libc v0.2.23",15290372035941851012]],"local":{"Precalculated":"9556f8fe2dd00cfce05614b290a09d683b4b4209"},"rustflags":[]}

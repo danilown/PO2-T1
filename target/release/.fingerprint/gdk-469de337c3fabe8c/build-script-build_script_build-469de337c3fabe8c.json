@@ -1,0 +1,1 @@
+{"rustc":2692670034823971972,"features":"[\"cairo-rs\", \"gdk-pixbuf\", \"gdk-sys\", \"gio\", \"pango\", \"v3_10\", \"v3_12\", \"v3_14\", \"v3_16\", \"v3_6\", \"v3_8\"]","target":4186588098074016128,"profile":4597243770934309319,"deps":[],"local":{"Precalculated":"7c6ed03f875a6cedb5b77343db42eb45de481a1c"},"rustflags":[]}

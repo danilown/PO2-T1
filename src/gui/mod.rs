@@ -12,56 +12,41 @@ pub fn launch () {
     let janela          :gtk::Window        = builder.get_object("Janela").unwrap();
     let entradafx       :gtk::Entry         = builder.get_object("Entradafx").unwrap();
     let metodos         :gtk::ComboBoxText  = builder.get_object("Metodos").unwrap();
-    let valorpassoerro  :gtk::SpinButton    = builder.get_object("ValorPassoErro").unwrap();
+    let valorpasso      :gtk::SpinButton    = builder.get_object("ValorPasso").unwrap();
+    let valorerro       :gtk::SpinButton    = builder.get_object("ValorErro").unwrap();
     let entradaa        :gtk::Entry         = builder.get_object("EntradaA").unwrap();
     let entradab        :gtk::Entry         = builder.get_object("EntradaB").unwrap();
     let botaocalc       :gtk::Button        = builder.get_object("BotaoCalc").unwrap();
     let saidaxotimo     :gtk::Entry         = builder.get_object("SaidaxOtimo").unwrap();
     let saidafxotimo    :gtk::Entry         = builder.get_object("SaidafxOtimo").unwrap();
     let tabelaview      :gtk::TreeView      = builder.get_object("TabelaView").unwrap();
-    
+    //let labelpanicA     :gtk::Label         = builder.get_object("LabelFilter").unwrap();
+    //let labelpanicB     :gtk::Label         = builder.get_object("LabelFilter5").unwrap();
 
     janela.show_all();
     
     //Controle do botão Calcular
     botaocalc.connect_clicked(move |_|{
 
-        // Caputura dos parâmetros.
-        let mut fx: &str        =  &*entradafx.get_text().unwrap();
-        println!("Fx: {}", fx);
-        // let mut passoerro: f64  = valorpassoerro.get_text().unwrap().parse().unwrap();   
-        let mut passoerro: i32  = valorpassoerro.get_text().unwrap().parse().unwrap(); 
-        println!("passoerro: {}", passoerro);
-
-        let mut erro: f64 = (10 as f64).powi(passoerro);
-        println!("erro: {}", erro);
-
+        let mut fx: &str        = &*entradafx.get_text().unwrap();
+        let mut vpasso: i32     = valorpasso.get_text().unwrap().parse().unwrap(); 
+        let mut passo: f64      = (10 as f64).powi(vpasso);
+        let mut verro: i32      = valorerro.get_text().unwrap().parse().unwrap(); 
+        let mut erro: f64       = (10 as f64).powi(verro);
         let mut entrada_A: f64  = entradaa.get_text().unwrap().parse().unwrap();   
-        println!("entrada_A: {}", entrada_A);
-
         let mut entrada_B: f64  = entradab.get_text().unwrap().parse().unwrap();  
-        println!("entrada_B: {}", entrada_B);
 
-        let expr: meval::Expr   = fx.parse().unwrap();
-
-        let func = expr.bind("x").unwrap(); 
-        println!("{}",func(2.) );   
-
+        let mut auxpanic = 0;
         // Avaliação dos parâmetros
         if (entradafx.get_text_length() == 0){
-            entradafx.set_text("Função vazia !");   
-        }
-        if (valorpassoerro.get_text_length() == 0){
-            println!("passo/erro vazio");
-        }
+            auxpanic = 1;
+        }        
         if (entradaa.get_text_length() == 0 || entrada_A > entrada_B){
-            println!("A vazio ou A maior que B");
+            auxpanic = 1;
         }
         if (entradab.get_text_length() == 0){
-            println!("B vazio");
+           auxpanic = 1;
         }
-
-
 
         // Comparadores String para o match.
         let Muniforme    = "Busca Uniforme";
@@ -71,37 +56,50 @@ pub fn launch () {
         let Mbissecao    = "Bisseção";
         let Mnewton      = "Newton";
         
-        let metod = metodos.get_active_text().unwrap();
-        
-        if (metod == Muniforme){
-            let resp: f64 = busca_uniforme(&*func, entrada_A, entrada_B, erro);
-            saidafxotimo.set_text(&*(func(resp).to_string()));
-            saidaxotimo.set_text(&*(resp.to_string()));
-            println!("uniforme");
-        }else if (metod == Mdicotomica){
-            let resp: f64 = busca_dicotomica(&*func, entrada_A, entrada_B, erro, erro * 100.);
-            saidafxotimo.set_text(&*(func(resp).to_string()));
-            saidaxotimo.set_text(&*(resp.to_string()));
-            println!("dicotomica");
-        }else if (metod == Maurea){
-            let resp: f64 = secao_aurea(&*func, entrada_A, entrada_B, erro);
-            saidafxotimo.set_text(&*(func(resp).to_string()));
-            saidaxotimo.set_text(&*(resp.to_string()));
-        }else if (metod == Mfibonacci){
-            let resp: f64 = busca_fibo(&*func, entrada_A, entrada_B, erro);
-            saidafxotimo.set_text(&*(func(resp).to_string()));
-            saidaxotimo.set_text(&*(resp.to_string()));
-            println!("fibonacci");
-        }else if (metod == Mbissecao){
-            let resp: f64 = bissecao(&*func, entrada_A, entrada_B, erro);
-            saidafxotimo.set_text(&*(func(resp).to_string()));
-            saidaxotimo.set_text(&*(resp.to_string()));
-            println!("bissecao");
-        }else if (metod == Mnewton) {
-            let resp: f64 = newton(&*func, entrada_A, entrada_B, erro);
-            saidafxotimo.set_text(&*(func(resp).to_string()));
-            saidaxotimo.set_text(&*(resp.to_string()));
-            println!("newton!");
+        if (auxpanic == 1){
+            entradafx.set_text("Algo não foi preenchido corretamente!");
+
+        }else {
+            
+            // Caputura dos parâmetros.
+            
+            let expr: meval::Expr   = fx.parse().unwrap();
+            let func = expr.bind("x").unwrap(); 
+
+            let metod = metodos.get_active_text().unwrap();
+            
+
+            if (metod == Muniforme){
+
+                let resp: f64 = busca_uniforme(&*func, entrada_A, entrada_B, passo);
+                saidafxotimo.set_text(&*(func(resp).to_string()));
+                saidaxotimo.set_text(&*(resp.to_string()));
+                println!("uniforme");
+            }else if (metod == Mdicotomica){
+                let resp: f64 = busca_dicotomica(&*func, entrada_A, entrada_B, passo, erro);
+                saidafxotimo.set_text(&*(func(resp).to_string()));
+                saidaxotimo.set_text(&*(resp.to_string()));
+                println!("dicotomica");
+            }else if (metod == Maurea){
+                let resp: f64 = secao_aurea(&*func, entrada_A, entrada_B, erro);
+                saidafxotimo.set_text(&*(func(resp).to_string()));
+                saidaxotimo.set_text(&*(resp.to_string()));
+            }else if (metod == Mfibonacci){
+                let resp: f64 = busca_fibo(&*func, entrada_A, entrada_B, erro);
+                saidafxotimo.set_text(&*(func(resp).to_string()));
+                saidaxotimo.set_text(&*(resp.to_string()));
+                println!("fibonacci");
+            }else if (metod == Mbissecao){
+                let resp: f64 = bissecao(&*func, entrada_A, entrada_B, erro);
+                saidafxotimo.set_text(&*(func(resp).to_string()));
+                saidaxotimo.set_text(&*(resp.to_string()));
+                println!("bissecao");
+            }else if (metod == Mnewton) {
+                let resp: f64 = newton(&*func, entrada_A, entrada_B, erro);
+                saidafxotimo.set_text(&*(func(resp).to_string()));
+                saidaxotimo.set_text(&*(resp.to_string()));
+                println!("newton!");
+            }
         }
        
 

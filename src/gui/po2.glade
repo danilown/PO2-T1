@@ -40,6 +40,8 @@
           <object class="GtkGrid" id="GradeEntrada">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="row_spacing">5</property>
+            <property name="column_spacing">3</property>
             <child>
               <object class="GtkLabel" id="Labelfx">
                 <property name="visible">True</property>
@@ -71,6 +73,106 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="LabelPasso">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Passo/Erro</property>
+                <property name="label" translatable="yes">  Δ = 10 ^ </property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="ValorPasso">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="width_chars">2</property>
+                <property name="max_width_chars">3</property>
+                <property name="adjustment">AjustePassoErro</property>
+                <property name="climb_rate">1</property>
+                <property name="value">-1</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="EntradaB">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="max_length">1</property>
+                <property name="placeholder_text" translatable="yes">1</property>
+              </object>
+              <packing>
+                <property name="left_attach">7</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="LabelB">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">final do intervalo checado</property>
+                <property name="label" translatable="yes"> b: </property>
+              </object>
+              <packing>
+                <property name="left_attach">6</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="EntradaA">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="placeholder_text" translatable="yes">-3</property>
+              </object>
+              <packing>
+                <property name="left_attach">7</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="LabelA">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Inicio do intervalo checado</property>
+                <property name="label" translatable="yes"> a: </property>
+              </object>
+              <packing>
+                <property name="left_attach">6</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="ValorErro">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="width_chars">2</property>
+                <property name="max_width_chars">3</property>
+                <property name="adjustment">AjustePassoErro</property>
+                <property name="climb_rate">1</property>
+                <property name="value">-1</property>
+              </object>
+              <packing>
+                <property name="left_attach">5</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="LabelErro">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">  ε = 10 ^ </property>
+              </object>
+              <packing>
+                <property name="left_attach">4</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkComboBoxText" id="Metodos">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -86,83 +188,19 @@
                 </items>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
-                <property name="width">6</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="LabelPassoErro">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Passo/Erro</property>
-                <property name="label" translatable="yes">Δ/ε = 10 ^ </property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="ValorPassoErro">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="width_chars">2</property>
-                <property name="max_width_chars">3</property>
-                <property name="adjustment">AjustePassoErro</property>
-                <property name="climb_rate">1</property>
-                <property name="value">-1</property>
-              </object>
-              <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
+                <property name="top_attach">2</property>
+                <property name="width">7</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="LabelA">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Inicio do intervalo checado</property>
-                <property name="label" translatable="yes"> a: </property>
-              </object>
-              <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">1</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
-              <object class="GtkEntry" id="EntradaA">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="placeholder_text" translatable="yes">-3</property>
-              </object>
-              <packing>
-                <property name="left_attach">3</property>
-                <property name="top_attach">1</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
-              <object class="GtkLabel" id="LabelB">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">final do intervalo checado</property>
-                <property name="label" translatable="yes"> b: </property>
-              </object>
-              <packing>
-                <property name="left_attach">4</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="EntradaB">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="placeholder_text" translatable="yes">1</property>
-              </object>
-              <packing>
-                <property name="left_attach">5</property>
-                <property name="top_attach">1</property>
-              </packing>
+              <placeholder/>
             </child>
           </object>
           <packing>
