@@ -1,7 +1,6 @@
 extern crate meval;
 use gtk;
 use gtk::prelude::*;
-use std::string::String;
 
 pub fn launch () {
 
@@ -28,12 +27,25 @@ pub fn launch () {
     botaocalc.connect_clicked(move |_|{
 
         // Caputura dos parâmetros.
-        let mut fx        =  entradafx.get_text();
-        let mut passoerro: f64  = valorpassoerro.get_text().parse().unwrap();   
-        let mut entrada_A: f64  = entradaa.get_text().parse().unwrap();          
-        let mut entrada_B: f64  = entradab.get_text().parse().unwrap();  
+        let mut fx: &str        =  &*entradafx.get_text().unwrap();
+        println!("Fx: {}", fx);
+        // let mut passoerro: f64  = valorpassoerro.get_text().unwrap().parse().unwrap();   
+        let mut passoerro: i32  = valorpassoerro.get_text().unwrap().parse().unwrap(); 
+        println!("passoerro: {}", passoerro);
+
+        let mut erro: f64 = (10 as f64).powi(passoerro);
+        println!("erro: {}", erro);
+
+        let mut entrada_A: f64  = entradaa.get_text().unwrap().parse().unwrap();   
+        println!("entrada_A: {}", entrada_A);
+
+        let mut entrada_B: f64  = entradab.get_text().unwrap().parse().unwrap();  
+        println!("entrada_B: {}", entrada_B);
+
         let expr: meval::Expr   = fx.parse().unwrap();
-        let func = expr.bind("x").unwrap();        
+
+        let func = expr.bind("x").unwrap(); 
+        println!("{}",func(2.) );   
 
         // Avaliação dos parâmetros
         if (entradafx.get_text_length() == 0){
@@ -42,7 +54,7 @@ pub fn launch () {
         if (valorpassoerro.get_text_length() == 0){
             println!("passo/erro vazio");
         }
-        if (entradaa.get_text_length() == 0|| entradaa.get_text_length() > entradab.get_text_length()){
+        if (entradaa.get_text_length() == 0 || entrada_A > entrada_B){
             println!("A vazio ou A maior que B");
         }
         if (entradab.get_text_length() == 0){
@@ -52,28 +64,43 @@ pub fn launch () {
 
 
         // Comparadores String para o match.
-        let uniforme    = "Busca Uniforme";
-        let dicotomica  = "Busca Dicotômica";
-        let aurea       = "Seção Áurea "; // deixar o espaço no final
-        let fibonacci   = "Busca de Fibonacci";
-        let bissecao    = "Bisseção";
-        let newton      = "Newton";
+        let Muniforme    = "Busca Uniforme";
+        let Mdicotomica  = "Busca Dicotômica";
+        let Maurea       = "Seção Áurea "; // deixar o espaço no final
+        let Mfibonacci   = "Busca de Fibonacci";
+        let Mbissecao    = "Bisseção";
+        let Mnewton      = "Newton";
         
         let metod = metodos.get_active_text().unwrap();
         
-        if (metod == uniforme){
-            println!("uniforme");
-        }else if (metod == dicotomica){
-            println!("dicotomica");
-        }else if (metod == aurea){
-            let resp = secao_aurea(&*func, entrada_A, entrada_B, passoerro);
+        if (metod == Muniforme){
+            let resp: f64 = busca_uniforme(&*func, entrada_A, entrada_B, erro);
             saidafxotimo.set_text(&*(func(resp).to_string()));
             saidaxotimo.set_text(&*(resp.to_string()));
-        }else if (metod == fibonacci){
+            println!("uniforme");
+        }else if (metod == Mdicotomica){
+            let resp: f64 = busca_dicotomica(&*func, entrada_A, entrada_B, erro, erro * 100.);
+            saidafxotimo.set_text(&*(func(resp).to_string()));
+            saidaxotimo.set_text(&*(resp.to_string()));
+            println!("dicotomica");
+        }else if (metod == Maurea){
+            let resp: f64 = secao_aurea(&*func, entrada_A, entrada_B, erro);
+            saidafxotimo.set_text(&*(func(resp).to_string()));
+            saidaxotimo.set_text(&*(resp.to_string()));
+        }else if (metod == Mfibonacci){
+            let resp: f64 = busca_fibo(&*func, entrada_A, entrada_B, erro);
+            saidafxotimo.set_text(&*(func(resp).to_string()));
+            saidaxotimo.set_text(&*(resp.to_string()));
             println!("fibonacci");
-        }else if (metod == bissecao){
+        }else if (metod == Mbissecao){
+            let resp: f64 = bissecao(&*func, entrada_A, entrada_B, erro);
+            saidafxotimo.set_text(&*(func(resp).to_string()));
+            saidaxotimo.set_text(&*(resp.to_string()));
             println!("bissecao");
-        }else if (metod == newton) {
+        }else if (metod == Mnewton) {
+            let resp: f64 = newton(&*func, entrada_A, entrada_B, erro);
+            saidafxotimo.set_text(&*(func(resp).to_string()));
+            saidaxotimo.set_text(&*(resp.to_string()));
             println!("newton!");
         }
        
@@ -163,6 +190,50 @@ fn busca_fibo(func: &Fn(f64) -> f64, mut lower_bound: f64, mut upper_bound: f64,
     (lower_bound + upper_bound) / 2.
 } 
 
+/* Busca uniforme com uso do refinamento
+   recebe a funcao, o limite inferior e o limite superior do intervalo e o tamanho do passo.
+   Retorna o ponto onde o valor da funcao eh minimo */
+fn busca_uniforme(func: &Fn(f64) -> f64, lower_bound: f64, upper_bound: f64, mut passo: f64) -> f64 { 
+    let mut x_atual: f64 = lower_bound; // x = a
+    let mut x_anter: f64 = lower_bound;
+
+    // passos de tamanho normal
+    // enquanto a nova aproximacao eh melhor que antiga 
+    while (func(x_atual) > func(x_atual + passo)) && ((x_atual + passo) <= upper_bound) {
+        x_anter = x_atual;
+        x_atual += passo;
+    }
+
+    // voltando uma iteracao
+    x_atual = x_anter; 
+    // passos de tamanho passo/10
+    // enquanto a nova aproximacao eh melhor que antiga 
+    passo = passo / 10.;
+    while (func(x_atual) > func(x_atual + passo)) && ((x_atual + passo) <= upper_bound) {
+        x_atual += passo;
+    }
+
+    x_atual
+}
+
+/* recebe a funcao, o limite inferior e o limite superior do intervalo, o tamanho do passo(epsilon) e o intervalo de incerteza(l) .
+   Retorna o ponto onde o valor da funcao eh minimo */
+fn busca_dicotomica(func: &Fn(f64) -> f64, mut lower_bound: f64, mut upper_bound: f64, passo: f64, intervalo_incerteza: f64) -> f64 {  
+    let mut x: f64;
+    let mut z: f64;
+
+    while (upper_bound - lower_bound).abs() >= intervalo_incerteza {
+        x = (lower_bound + upper_bound) / 2. - passo;
+        z = (lower_bound + upper_bound) / 2. + passo;
+        if func(x) > func(z){
+            lower_bound = x; // raiz a direita (discarte a parte a esquerda do intervalo)
+        }
+        else {
+            upper_bound = z; // raiz a esquerda (discarte a parte a direita do intervalo)
+        }
+    }
+    (lower_bound + upper_bound) / 2.
+}
 
 // MÉTODO DA BISSEÇÃO:
 /* recebe a funcao, o limite inferior e o limite superior do intervalo e o erro.

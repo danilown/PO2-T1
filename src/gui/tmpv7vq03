@@ -1,0 +1,308 @@
+extern crate meval;
+use gtk;
+use gtk::prelude::*;
+
+pub fn launch () {
+
+    gtk::init().unwrap_or_else( |_| panic!("Não iniciou gtk!"));
+
+    let builder = gtk::Builder::new_from_string(include_str!("po2.glade"));
+    
+    let tabeladata      :gtk::ListStore     = builder.get_object("TabelaData").unwrap();
+    let janela          :gtk::Window        = builder.get_object("Janela").unwrap();
+    let entradafx       :gtk::Entry         = builder.get_object("Entradafx").unwrap();
+    let metodos         :gtk::ComboBoxText  = builder.get_object("Metodos").unwrap();
+    let valorpassoerro  :gtk::SpinButton    = builder.get_object("ValorPassoErro").unwrap();
+    let entradaa        :gtk::Entry         = builder.get_object("EntradaA").unwrap();
+    let entradab        :gtk::Entry         = builder.get_object("EntradaB").unwrap();
+    let botaocalc       :gtk::Button        = builder.get_object("BotaoCalc").unwrap();
+    let saidaxotimo     :gtk::Entry         = builder.get_object("SaidaxOtimo").unwrap();
+    let saidafxotimo    :gtk::Entry         = builder.get_object("SaidafxOtimo").unwrap();
+    let tabelaview      :gtk::TreeView      = builder.get_object("TabelaView").unwrap();
+    
+
+    janela.show_all();
+    
+    //Controle do botão Calcular
+    botaocalc.connect_clicked(move |_|{
+        use std::str::*;
+        // Caputura dos parâmetros.
+        let mut fx: &str        =  &*entradafx.get_text().unwrap();
+        // let mut passoerro: f64  = valorpassoerro.get_text().unwrap().parse().unwrap();   
+        let mut passoerro: f64  = valorpassoerro.get_text().unwrap().parse().; 
+        let mut entrada_A: f64  = entradaa.get_text().unwrap().parse().unwrap();          
+        let mut entrada_B: f64  = entradab.get_text().unwrap().parse().unwrap();  
+        let expr: meval::Expr   = fx.parse().unwrap();
+        let func = expr.bind("x").unwrap();     
+
+        println!("{}",func(2.) );   
+
+        // Avaliação dos parâmetros
+        if (entradafx.get_text_length() == 0){
+            entradafx.set_text("Função vazia !");   
+        }
+        if (valorpassoerro.get_text_length() == 0){
+            println!("passo/erro vazio");
+        }
+        if (entradaa.get_text_length() == 0 || entradaa.get_text() > entradab.get_text()){
+            println!("A vazio ou A maior que B");
+        }
+        if (entradab.get_text_length() == 0){
+            println!("B vazio");
+        }
+
+
+
+        // Comparadores String para o match.
+        let uniforme    = "Busca Uniforme";
+        let dicotomica  = "Busca Dicotômica";
+        let aurea       = "Seção Áurea "; // deixar o espaço no final
+        let fibonacci   = "Busca de Fibonacci";
+        let bissecao    = "Bisseção";
+        let newton      = "Newton";
+        
+        let metod = metodos.get_active_text().unwrap();
+        
+        if (metod == uniforme){
+            println!("uniforme");
+        }else if (metod == dicotomica){
+            println!("dicotomica");
+        }else if (metod == aurea){
+            let resp = secao_aurea(&*func, entrada_A, entrada_B, passoerro);
+            saidafxotimo.set_text(&*(func(resp).to_string()));
+            saidaxotimo.set_text(&*(resp.to_string()));
+        }else if (metod == fibonacci){
+            println!("fibonacci");
+        }else if (metod == bissecao){
+            println!("bissecao");
+        }else if (metod == newton) {
+            println!("newton!");
+        }
+       
+
+    });
+
+
+
+    janela.connect_delete_event(|_, _| { // trata o fechamento da janela
+        gtk::main_quit();
+        Inhibit(false)
+    });
+
+    gtk::main();
+}
+
+
+// MÉTODOS:
+
+// BUSCA UNIFORME
+//fn busca_uniforme(func: &Fn(f64) -> f64, mut lower_bound: f64, mut upper_bound: f64, intervalo_incerteza: f64) -> f64{
+    
+
+//}
+
+
+
+// SEÇÃO ÁUREA:
+/* recebe a funcao, o limite inferior e o limite superior do intervalo e o intervalo de incerteza.
+   Retorna o ponto onde o valor da funcao eh minimo */
+fn secao_aurea(func: &Fn(f64) -> f64, mut lower_bound: f64, mut upper_bound: f64, intervalo_incerteza: f64) -> f64 {
+    let razao_area: f64 = (- 1. + (5 as f64).sqrt() ) / 2.;
+    let mut me = lower_bound + (1. - razao_area) * (upper_bound - lower_bound);
+    let mut lambda = lower_bound + razao_area * (upper_bound - lower_bound);
+
+    loop {
+        if func(me) > func(lambda) {
+            lower_bound = me;
+            me = lambda;
+            lambda = lower_bound + razao_area * (upper_bound - lower_bound);
+        }
+        else {
+            if func(me) < func(lambda) {
+                upper_bound = lambda;
+                lambda = me;
+                me = lower_bound + (1. - razao_area) * (upper_bound - lower_bound);
+            }
+        }
+        if(upper_bound - lower_bound) < intervalo_incerteza {
+            break;
+        }
+    }
+    (lower_bound + upper_bound) / 2.
+}
+
+
+// MÉTODO DE FIBONACCI:
+/* recebe a funcao, o limite inferior e o limite superior do intervalo e o intervalo de incerteza.
+   Retorna o ponto onde o valor da funcao eh minimo */
+fn busca_fibo(func: &Fn(f64) -> f64, mut lower_bound: f64, mut upper_bound: f64, intervalo_incerteza: f64) -> f64 {
+    let fibo_seq = get_fibo_seq( ((upper_bound - lower_bound) / intervalo_incerteza).ceil() as u64);
+    let n = fibo_seq.len() - 1; // numero do maior indice
+    let k_max: usize = n - 1; // numero maximo de iteracoes
+    let mut me: f64;
+    let mut lambda: f64;
+
+    for k in 0..k_max {
+        me = lower_bound + (fibo_seq[(n - k - 2) as usize] as f64 / fibo_seq[(n - k) as usize] as f64) * (upper_bound - lower_bound);
+        lambda = lower_bound + (fibo_seq[(n - k - 1) as usize] as f64 / fibo_seq[(n - k) as usize] as f64) * (upper_bound - lower_bound);
+
+        if func(me) > func(lambda) {
+            lower_bound = me;
+            me = lambda;
+            lambda = lower_bound + (fibo_seq[(n - k - 1) as usize] as f64 / fibo_seq[(n - k) as usize] as f64) * (upper_bound - lower_bound);
+        }
+        else {
+            if func(me) < func(lambda) {
+                upper_bound = lambda;
+                lambda = me;
+                me = lower_bound + (fibo_seq[(n - k - 2) as usize] as f64 / fibo_seq[(n - k) as usize] as f64) * (upper_bound - lower_bound);
+            }
+        }
+        if(upper_bound - lower_bound) < intervalo_incerteza {
+            break;
+        }
+    }
+    (lower_bound + upper_bound) / 2.
+} 
+
+
+// MÉTODO DA BISSEÇÃO:
+/* recebe a funcao, o limite inferior e o limite superior do intervalo e o erro.
+   Retorna o ponto onde o valor da funcao eh minimo */
+fn bissecao(func: &Fn(f64) -> f64, mut lower_bound: f64, mut upper_bound: f64, err: f64) -> f64 {
+    let mut x: f64 = (upper_bound + lower_bound) / 2.;
+    let mut derivada: f64 = get_first_derivative1(func, x, 1 as f64, err / 100.);
+
+    loop {
+        x = (upper_bound + lower_bound) / 2.;
+        derivada = get_first_derivative1(func, x, 1 as f64, err / 100.);
+        // A derivada no ponto eh igual a zero?
+        if derivada.abs() < (err / 100.) {
+            // x eh ponto de minimo
+            return (lower_bound + upper_bound) / 2.;
+        }
+        else {
+            if derivada > 0. {
+                // minimo ocorre a esquerda >> x eh o novo limite superior do intervalo
+                upper_bound = x;
+            }
+            else {
+                // minimo ocorre a direita >> x eh o novo limite inferior do intervalo
+                lower_bound = x;
+            }
+        }
+    }
+}
+
+
+// MÉTODO DE NEWTON:
+/* recebe a funcao, o limite inferior e o limite superior do intervalo e o erro.
+   Retorna o ponto onde o valor da funcao eh minimo 
+   neste metodo x inicial (chute inicial) eh definido como lower_bound */
+fn newton(func: &Fn(f64) -> f64, lower_bound: f64, upper_bound: f64, err: f64) -> f64 {
+    let mut x_atual: f64 = lower_bound; // xk
+    let mut x_prox: f64; // xk+1
+    // derivada primeira no ponto xk
+    let mut derivada_primera: f64;
+    // derivada segunda no ponto xk
+    let mut derivada_segunda: f64;
+
+    loop {
+        derivada_primera = get_first_derivative1(func, x_atual, 1 as f64, err / 100.);
+        derivada_segunda = get_second_derivative1(func, x_atual, 1 as f64, err / 100.);
+        x_prox = x_atual - (derivada_primera / derivada_segunda);
+        /* se a derivada primera da funcao no ponto atual eh menor que o erro aceitavel ou 
+           se o modulo da diferenca entre o x anterior e o x atual dividido pelo maior entre 1 e o ponto atual eh menor que o erro aceitavel
+        */
+        if (get_first_derivative1(func, x_prox, 1 as f64, err / 100.).abs() < err) || ((x_prox - x_atual).abs() / x_prox.max(1.) < err) {
+            return x_prox;
+        }
+        x_atual = x_prox;
+    }
+}
+
+
+// SEQUENCIA DE FIBONACCI
+/**
+ * Recebe um n que eh o valor anterior ao mais alto da sequencia de fibonacci
+ * Ex.: se n = 90 , a sequencia tera tamanho 11 pois o elemento 11 da sequencia eh 144, que eh maior que 90 e o elemento 10 eh 89 que eh menor que 90
+ * Retorna um vetor contendo a sequencia de fibonacci com um determinado comprimento n (não aceita valores menores que 1)
+ * NOTA: em sistemas 64 bits, n <= 93, valores maiores causam overflow.
+ */
+// Testes fibonacci
+fn get_fibo_seq(n: u64) -> Vec<u64> {
+    let mut fibo_seq: Vec<u64> = Vec::new();
+    let mut next_element: u64;
+    let mut i: u8 = 2; // a sequencia de fibonacci nao sera maior que 93 (overflow) e 93 cabe em 8 bits
+
+    // colocando 1 em fibo_seq[0]
+    fibo_seq.push(1);
+    // se n eh 0, o maior elemento da sequencia apos ele eh o 1
+    if n == 0{
+        // eliminando o espaco extra alocado e mantendo somente o necessario
+        fibo_seq.shrink_to_fit();
+        return fibo_seq;
+    }
+    
+    // colocando 1 em fibo_seq[1]
+    fibo_seq.push(1); 
+
+    next_element = fibo_seq[(i - 1) as usize] + fibo_seq[(i - 2) as usize];
+    while next_element <= n {
+        fibo_seq.push(next_element);
+        i += 1;
+        next_element = fibo_seq[(i - 1) as usize] + fibo_seq[(i - 2) as usize];
+    }
+    fibo_seq.push(next_element);
+    // eliminando o espaco extra alocado e mantendo somente o necessario
+    fibo_seq.shrink_to_fit();
+    fibo_seq
+}
+
+
+// DERIVADA PRIMEIRA
+/**
+ * Recebe uma funcao de uma variavel, um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
+ * avaliacao(nesta aplicacao ele sera fixo, mas por motivos de generalizacao, sera um parametro da funcao). A funcao sempre 
+ * recebera da chamadora um h = 1000 * erro 
+ * Retorna o valor da derivada primeira para um funcao de uma variavel
+ */
+fn get_first_derivative1(func: &Fn(f64) -> f64, x: f64, mut h: f64, err: f64) -> f64 {
+    let mut p: f64;
+    let mut q: f64;
+
+    p = (func(x + h) - func(x - h)) / (2. * h);
+    for _ in 0..10 {
+        q = p;
+        h = h / 2.;
+        p = (func(x + h) - func(x - h )) / (2. * h);
+        if (p - q).abs() < err {
+            break;
+        }
+    }
+    p
+}
+
+
+// DERIVADA SEGUNDA
+/**
+ * Recebe uma string (funcao), um erro, e um ponto de dimencao n (n >=1), o valor de n, e h que eh o intervalo de 
+ * avaliacao(nesta aplicacao ele sera fixo, mas por motivos de generalizacao, sera um parametro da funcao). A funcao sempre 
+ * recebera da chamadora um h = 1000 * erro 
+ * Retorna o valor da derivada segunda da funcao dada no ponto
+ */
+fn get_second_derivative1(func: &Fn(f64) -> f64, x: f64, mut h: f64, err: f64) -> f64 {
+    let mut p: f64;
+    let mut q: f64;
+
+    p = (func(x + 2. * h) - 2. * func(x) + func(x - 2. * h)) / (2. * h).powi(2);
+    for _ in 0..10 {
+        q = p;
+        h = h / 2.;
+        p = (func(x + 2. * h) - 2. * func(x) + func(x - 2. * h)) / (2. * h).powi(2);
+        if (p - q).abs() < err {
+            break;
+        }
+    }
+    p
+}
