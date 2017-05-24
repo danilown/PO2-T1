@@ -1,4 +1,5 @@
-/* recebe a funcao, o limite inferior e o limite superior do intervalo e o intervalo de incerteza.
+/* Busca uniforme com uso do refinamento
+   recebe a funcao, o limite inferior e o limite superior do intervalo e o tamanho do passo.
    Retorna o ponto onde o valor da funcao eh minimo */
 fn busca_uniforme(func: &Fn(f64) -> f64, lower_bound: f64, upper_bound: f64, mut passo: f64) -> f64 { 
     let mut x_atual: f64 = lower_bound; // x = a
